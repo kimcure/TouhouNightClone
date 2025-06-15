@@ -15,10 +15,13 @@ public class BossEnemy : MonoBehaviour
     public SpellCardUIController spellCardUI;
     public AudioSource audioSource;
 
+    public SpellCardManager spellManager;
+
     private int currentIndex = 0;
     private float currentHP;
     private float timer = 0f;
     private float fireTimer = 0f;
+    private bool isDying = false;
 
     private PatternSlot[] slots;
     private int slotIndex = 0;
@@ -119,6 +122,20 @@ public class BossEnemy : MonoBehaviour
             spellCardUI.Deactivate();
         }
 
+        SpellCard current = spellCards[currentIndex];
+
+        bool success = currentHP <= 0;
+        if (spellManager != null)
+        {
+            if (success)
+            {
+                spellManager.PlaySuccess(current.spellName);
+            } else
+            {
+                spellManager.PlayFail(current.spellName);
+            }
+        }
+
         currentIndex++;
         if (currentIndex < spellCards.Length)
         {
@@ -143,6 +160,9 @@ public class BossEnemy : MonoBehaviour
 
     private void Die()
     {
+        if (isDying) return;
+        isDying = true;
+
         Debug.Log("[Boss] »ç¸Á");
         Destroy(gameObject);
     }
